@@ -208,7 +208,7 @@ Cypress.Commands.add('setWelcomePref',(userid)=>{
     }
 
     const prefsToSave = JSON.stringify(prefs)
-    const cmdSavePrefs = `${cmdPrefix} 'wp user meta update ${userid} ${userMetaPrefsKey} ''${prefsToSave}'' --format=json'`
+    const cmdSavePrefs = `PREFS='${prefsToSave}' && ${cmdPrefix} "wp user meta update ${userid} ${userMetaPrefsKey} '$PREFS' --format=json"`
     console.log(`Saving user prefs for user ${userid}`)
     cy.exec(cmdSavePrefs).its('code').should('eq',0)
   })
