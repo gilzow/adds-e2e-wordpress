@@ -72,12 +72,12 @@ Cypress.Commands.add('beforeCreateUser', (username) => {
           console.log(`we have posts to delete for user ${data.id}. List of posts to delete:`)
           console.log(posts)
           const deletePosts = posts.join(' ')
-          const cmdDeletePosts = `${cmdPrefix} wp post delete ${deletePosts}`
+          const cmdDeletePosts = `${cmdPrefix} 'wp post delete ${deletePosts}'`
           cy.exec(cmdDeletePosts).its('code').should('eq',0)
         }
       })
       Cypress.session.clearAllSavedSessions()
-      const cmdUserDelete = `${cmdPrefix} wp user delete ${data.id} --reassign=false`
+      const cmdUserDelete = `${cmdPrefix} 'wp user delete ${data.id} --reassign=false'`
       cy.exec(cmdUserDelete).its('code').should('eq',0)
     }
   })
@@ -100,7 +100,7 @@ Cypress.Commands.add('createUser', (username, role="editor") => {
   const vendor = Cypress.env('environment')
   const cmdPrefix = determineOurCmdPrefix()
 
-  const cmdUserCreate = `${cmdPrefix} wp user create ${username} ${username}@mail.com --role=${role} --send-email=false --quiet`
+  const cmdUserCreate = `${cmdPrefix} 'wp user create ${username} ${username}@mail.com --role=${role} --send-email=false --quiet'`
 
   cy.exec(cmdUserCreate).should((response) => {
     expect(response.code).to.equal(0)
@@ -125,7 +125,7 @@ Cypress.Commands.add('findUser', (username) => {
   const vendor = Cypress.env('environment')
   const cmdPrefix = determineOurCmdPrefix()
 
-  const cmdUserFind = `${cmdPrefix} wp user list --login="${username}" --field=ID`
+  const cmdUserFind = `${cmdPrefix} 'wp user list --login="${username}" --field=ID'`
   cy.exec(cmdUserFind).then((response)=>{
     const returnData = {id:''}
     if(response.stdout !== ''){
@@ -143,7 +143,7 @@ Cypress.Commands.add('findUserPosts', (userID) => {
   const cmdPrefix = determineOurCmdPrefix()
   let posts = []
   console.log('starting function findUserPosts')
-  const cmdFindUserPosts = `${cmdPrefix} wp post list --field=ID --post_author=${userID} --format=json`
+  const cmdFindUserPosts = `${cmdPrefix} 'wp post list --field=ID --post_author=${userID} --format=json'`
   cy.exec(cmdFindUserPosts).then((response)=>{
     /**
      * we should get a string in JSON format. if no posts were found we should get []
@@ -166,7 +166,7 @@ Cypress.Commands.add('addPostForUser',(username, postObject)=>{
   console.log(`Adding a post for user ${username}`)
   cy.findUser(username).then((user)=>{
     expect(user.id).to.not.equal('')
-    const cmdNewPost = `${cmdPrefix} wp post create --post_title='${postObject.title} test' --post_content='${postObject.body}' --post_author=${user.id} --post_status=publish`
+    const cmdNewPost = `${cmdPrefix} 'wp post create --post_title='${postObject.title} test' --post_content='${postObject.body}' --post_author=${user.id} --post_status=publish'`
     cy.exec(cmdNewPost).its('code').should('eq',0)
   })
 })
@@ -183,7 +183,7 @@ Cypress.Commands.add('addPostForUser',(username, postObject)=>{
 Cypress.Commands.add('setWelcomePref',(userid)=>{
   const cmdPrefix = determineOurCmdPrefix()
   const userMetaPrefsKey = 'wp_persisted_preferences'
-  const cmdGetPrefs = `${cmdPrefix} wp user meta get ${userid} ${userMetaPrefsKey} --format=json`
+  const cmdGetPrefs = `${cmdPrefix} 'wp user meta get ${userid} ${userMetaPrefsKey} --format=json'`
   console.log(`Getting user prefs for use ${userid}`)
   cy.exec(cmdGetPrefs,{failOnNonZeroExit: false}).then((response)=>{
     //expect(response.code).to.eq(0)
@@ -208,7 +208,7 @@ Cypress.Commands.add('setWelcomePref',(userid)=>{
     }
 
     const prefsToSave = JSON.stringify(prefs)
-    const cmdSavePrefs = `${cmdPrefix} wp user meta update ${userid} ${userMetaPrefsKey} '${prefsToSave}' --format=json`
+    const cmdSavePrefs = `${cmdPrefix} 'wp user meta update ${userid} ${userMetaPrefsKey} '${prefsToSave}' --format=json'`
     console.log(`Saving user prefs for user ${userid}`)
     cy.exec(cmdSavePrefs).its('code').should('eq',0)
   })
@@ -220,7 +220,7 @@ const determineOurCmdPrefix = () => {
   switch (vendor) {
     case 'ddev':
     case 'local':
-      cmdPrefix = 'ddev'
+      cmdPrefix = 'ddev exec'
       break;
     default:
       cmdPrefix = `${vendor} ssh`
