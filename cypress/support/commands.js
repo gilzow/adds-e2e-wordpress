@@ -166,7 +166,7 @@ Cypress.Commands.add('addPostForUser',(username, postObject)=>{
   console.log(`Adding a post for user ${username}`)
   cy.findUser(username).then((user)=>{
     expect(user.id).to.not.equal('')
-    const cmdNewPost = `${cmdPrefix} 'wp post create --post_title='${postObject.title} test' --post_content='${postObject.body}' --post_author=${user.id} --post_status=publish'`
+    const cmdNewPost = `${cmdPrefix} 'wp post create --post_title="${postObject.title} test" --post_content="${postObject.body}" --post_author=${user.id} --post_status=publish'`
     cy.exec(cmdNewPost).its('code').should('eq',0)
   })
 })
@@ -208,7 +208,7 @@ Cypress.Commands.add('setWelcomePref',(userid)=>{
     }
 
     const prefsToSave = JSON.stringify(prefs)
-    const cmdSavePrefs = `${cmdPrefix} 'wp user meta update ${userid} ${userMetaPrefsKey} '${prefsToSave}' --format=json'`
+    const cmdSavePrefs = `${cmdPrefix} 'wp user meta update ${userid} ${userMetaPrefsKey} ''${prefsToSave}'' --format=json'`
     console.log(`Saving user prefs for user ${userid}`)
     cy.exec(cmdSavePrefs).its('code').should('eq',0)
   })
