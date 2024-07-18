@@ -15,6 +15,7 @@ jobs:
     env:
       PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORMSH_CLI_TOKEN }}
       PLATFORM_PROJECT: ${{ vars.PROJECT_ID }}
+      PLATFORM_BRANCH: "pr-${{ github.event.pull_request.number }}"
     steps:
       - run: curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | bash
         shell: bash
