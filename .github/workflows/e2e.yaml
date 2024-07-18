@@ -1,0 +1,37 @@
+name: Run e2e tests
+on:
+  workflow_run:
+    workflows: [ "platformsh" ]
+    types:
+      - completed
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  runtests:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORMSH_CLI_TOKEN }}
+      PLATFORM_PROJECT: ${{ vars.PROJECT_ID }}
+    steps:
+      - run: curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | bash
+        shell: bash
+
+      - name: 'Wait for psh and get target url'
+        id: get-target-url
+        uses: platformsh/gha-retrieve-psh-prenv-url@main
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: cypress-io/github-action@v6
+        with:
+          wait-on: ${{ steps.get-target-url.outputs.target_url }}
+          record: true
+        env:
+          CYPRESS_baseUrl: ${{ steps.get-target-url.outputs.target_url }}
+          CYPRESS_environment: ${{ vars.CYPRESS_ENVIRONMENT }}
+          #CYPRESS_site: ${{ matrix.site }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
