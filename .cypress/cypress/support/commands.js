@@ -77,7 +77,7 @@ Cypress.Commands.add('beforeCreateUser', (username) => {
         }
       })
       Cypress.session.clearAllSavedSessions()
-      const cmdUserDelete = `${cmdPrefix} 'wp user delete ${data.id} --reassign=false'`
+      const cmdUserDelete = `${cmdPrefix} 'wp user delete ${data.id} --yes'`
       cy.exec(cmdUserDelete).its('code').should('eq',0)
     }
   })
