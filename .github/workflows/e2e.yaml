@@ -30,6 +30,7 @@ jobs:
         with:
           wait-on: ${{ steps.get-target-url.outputs.target_url }}
           record: true
+          project: ./.cypress
         env:
           CYPRESS_baseUrl: ${{ steps.get-target-url.outputs.target_url }}
           CYPRESS_environment: ${{ vars.CYPRESS_ENVIRONMENT }}
